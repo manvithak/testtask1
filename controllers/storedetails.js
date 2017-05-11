@@ -1,10 +1,9 @@
     var connection = require('./../config');
     
-    
-    //var user = require('./models/user');
+    //var User = require('./models/users');
            
     module.exports.storedetails = function(req,res){
-        var today = new Date();
+        
         var User={
             "name":req.body.name,
             "email":req.body.email,
@@ -13,32 +12,21 @@
             "token":null
         }
      connection.query('SELECT * FROM details WHERE email = ?',User.email, function(error, results, fields){
-        if(error)
-        {
+        if(error){
             res.json({
                 message:'error in query'
             })
-        }
-        else
-        {
+        }else{
             console.log(User.email);
             //console.log(results[0].email);
 
-            if (  results.length > 0 )
-            {
+            if (  results.length > 0 ){
                 res.json({
-                    message:'email alredy verified'
+                    message:'User with this email already exists'
                 })
 
-            }
-            else
-            {
-                function randomString(length, chars) {
-                    var result = '';
-                    for (var i = length; i > 0; --i) 
-                        result += chars[Math.floor(Math.random() * chars.length)];
-                    return result;
-                    }
+            }else{
+                
                 var token = randomString(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
                 console.log(token);
 
@@ -49,9 +37,7 @@
                 status:false,
                 message:'there is some error with query'
             })
-        }
-   
-        else{
+        }else{
 
               res.json({
                 status:true,
@@ -72,3 +58,9 @@
     
 
 }
+function randomString(length, chars) {
+                    var result = '';
+                    for (var i = length; i > 0; --i) 
+                        result += chars[Math.floor(Math.random() * chars.length)];
+                    return result;
+                    }
