@@ -1,11 +1,19 @@
-var User={
-        "name":req.body.user_name,
-        "email":req.body.user_email,
-        "dob":req.body.user_date,
-        "gender":req.body.user_gender,
-        "token":null
-    }
+																																																																																																																																																																																														var connection = require('./../config');
+var connection = require('./../config');
+var Sequelize = require('sequelize');
+ 
+var users = connection.define('users', {
+					  phone: Sequelize.TEXT,
+					  password: Sequelize.TEXT,
+                      first_name: Sequelize.TEXT,
+                      last_name:Sequelize.TEXT,
+                      dob: Sequelize.DATEONLY,
+                      gender: Sequelize.TEXT,
+                      points: Sequelize.INTEGER,
+                      access_token: Sequelize.TEXT
+                    });
+        connection.sync();
+module.exports = users;
 
 
 
-module.exports = User;

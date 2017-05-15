@@ -1,15 +1,14 @@
-    var mysql      = require('mysql');
-    var connection = mysql.createConnection({
-      host     : 'localhost',
-      user     : 'root',
-      password : 'code123',
-      database : 'details'
+    var Sequelize = require('sequelize');
+    var connection = new Sequelize('wallet', 'root', 'code123', {
+    host: 'localhost',
+    dialect: 'mysql'
     });
-    connection.connect(function(err){
-    if(!err) {
-        console.log("Database is connected");
-    } else {
-        console.log("Error while connecting with database");
-    }
-    });
+
+    connection.authenticate().then(function(err) {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(function (err) {
+    console.log('Unable to connect to the database:', err);
+  });
+
     module.exports = connection;

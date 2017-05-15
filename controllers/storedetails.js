@@ -1,66 +1,110 @@
     var connection = require('./../config');
+    var Joi = require('joi');
+    var Sequelize = require('sequelize');
     
-    //var User = require('./models/users');
-           
+    var users = require('../models/users');
+    var session = require('express-session');
+
+    //var sess;
+    
     module.exports.storedetails = function(req,res){
+      //sess=req.session;
         
         var User={
-            "name":req.body.name,
-            "email":req.body.email,
-            "dob":req.body.dob,
-            "gender":req.body.gender,
-            "token":null
+            phone: req.body.phone,
+            password: req.body.password,
+            f_name: req.body.first_name,
+            l_name: req.body.last_name,
+            dob: req.body.dob,
+            gender: req.body.gender,
+            
+           
         }
-     connection.query('SELECT * FROM details WHERE email = ?',User.email, function(error, results, fields){
-        if(error){
-            res.json({
-                message:'error in query'
-            })
-        }else{
-            console.log(User.email);
-            //console.log(results[0].email);
+        var phone = User.phone;
+        var f_name = User.f_name;
+        var l_name = User.l_name;
+        var dob = User.dob;
+        var d = new Date();
+        var age = getAge(dob);
+        //var a = Joi.number().validate(phone);
+        console.log(age);
+        
+       var schema = {
+                  phone: Joi.string().regex(/[0-9]/, phone).length(10).required(),
+                  f_name: Joi.string().regex(/^\S+$/, f_name).min(2).required(),
+                  l_name: Joi.string().regex(/^\S+$/, l_name).min(2).required(),
+                };
 
-            if (  results.length > 0 ){
+            console.log(Joi.validate(phone, schema.phone));
+                  
+        if( (Joi.validate(phone, schema.phone)).error ){
+            res.json({
+              message:'phone number should be in numbers of exactly 10 digits'
+            })
+        }
+        else if( (Joi.validate(f_name, schema.f_name)).error ){
+          res.json({
+            message:'first name must have atleast 2 chars without spaces'
+          })
+        }
+        else if( (Joi.validate(l_name, schema.l_name)).error ){
+          res.json({
+            message:'last name must have 2 characters without spaces'
+          })
+        }
+        else if( age < 20){
+          res.json({
+            message:'user age should be 20'
+          })
+        }
+        else{
+                  
+                
+      
+        users.findAll({where:{phone: User.phone}}).then(function (data) {
+           
+                console.log(User.phone);
+                
+
+                if (  data.length > 0 ){
                 res.json({
-                    message:'User with this email already exists'
+                    message:'User with this phone number already exists'
                 })
 
-            }else{
+                }else{
                 
-                var token = randomString(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-                console.log(token);
-
-                User.token = token;
-              connection.query('INSERT INTO details SET ?',User, function (error, results, fields) {
-          if (error) {
-            res.json({
-                status:false,
-                message:'there is some error with query'
-            })
-        }else{
-
-              res.json({
-                status:true,
-                message:'user registered sucessfully'
-            })
-          }
-
-        });
-        
-        }
-        }
-            
-        }); 
-     
-        
-        
-        //connection.query('UPDATE details SET token = ?, WHERE email = ?', token,User.email, function(err, result) {});
-    
-
-}
-function randomString(length, chars) {
-                    var result = '';
-                    for (var i = length; i > 0; --i) 
-                        result += chars[Math.floor(Math.random() * chars.length)];
-                    return result;
+                
+                        users.create({
+                           phone: User.phone,
+                           password: User.password,
+                           first_name: User.f_name,
+                           last_name: User.l_name,
+                           dob: User.dob,
+                           gender: User.gender,
+                           points: 0
+                           
+                        }).then(function (task) {
+                        console.log(task.values);
+                        task.save();
+                        res.json({
+                          message: 'user registered successfully'
+                          })
+                       })
                     }
+              
+        });
+  
+    
+     }
+        
+    }  
+
+    function getAge(dob) 
+                  {
+                      var today = new Date();
+                      var birthyear = dob.substr(0,4);
+                      var age = today.getFullYear() - birthyear;
+                      
+                      return age;
+                  }     
+        

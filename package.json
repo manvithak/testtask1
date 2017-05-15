@@ -4,11 +4,12 @@
   "description": "email validation",
   "main": "index.js",
   "dependencies": {
-		"express": "~4.0.0",
-		"body-parser": "~1.0.1",
-		"mysql": "~2.5.0"
-		
-	},
+    "body-parser": "~1.0.1",
+    "express": "~4.0.0",
+    "express-validation": "^1.0.2",
+    "mysql": "^2.5.5",
+    "sequelize": "^3.30.4"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
