@@ -15,5 +15,3 @@ var users = connection.define('users', {
         connection.sync();
 module.exports = users;
 
-
-

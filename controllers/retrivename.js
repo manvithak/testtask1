@@ -54,3 +54,4 @@ var items = require('../models/users');
             result += chars[Math.floor(Math.random() * chars.length)];
     return result;
     }
+    

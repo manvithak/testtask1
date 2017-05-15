@@ -4,7 +4,7 @@
     dialect: 'mysql'
     });
 
-    connection.authenticate().then(function(err) {
+  connection.authenticate().then(function(err) {
     console.log('Connection has been established successfully.');
   })
   .catch(function (err) {

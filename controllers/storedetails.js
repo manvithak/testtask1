@@ -3,12 +3,10 @@
     var Sequelize = require('sequelize');
     
     var users = require('../models/users');
-    var session = require('express-session');
-
-    //var sess;
+    
     
     module.exports.storedetails = function(req,res){
-      //sess=req.session;
+     
         
         var User={
             phone: req.body.phone,
@@ -26,17 +24,15 @@
         var dob = User.dob;
         var d = new Date();
         var age = getAge(dob);
-        //var a = Joi.number().validate(phone);
+        
         console.log(age);
         
-       var schema = {
+        var schema = {
                   phone: Joi.string().regex(/[0-9]/, phone).length(10).required(),
                   f_name: Joi.string().regex(/^\S+$/, f_name).min(2).required(),
                   l_name: Joi.string().regex(/^\S+$/, l_name).min(2).required(),
                 };
 
-            console.log(Joi.validate(phone, schema.phone));
-                  
         if( (Joi.validate(phone, schema.phone)).error ){
             res.json({
               message:'phone number should be in numbers of exactly 10 digits'
@@ -100,11 +96,11 @@
     }  
 
     function getAge(dob) 
-                  {
-                      var today = new Date();
-                      var birthyear = dob.substr(0,4);
-                      var age = today.getFullYear() - birthyear;
-                      
-                      return age;
-                  }     
-        
+        {
+            var today = new Date();
+            var birthyear = dob.substr(0,4);
+            var age = today.getFullYear() - birthyear;
+            
+            return age;
+        }     
+

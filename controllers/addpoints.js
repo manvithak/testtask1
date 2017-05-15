@@ -20,7 +20,7 @@ var Card={
 var d = new Date();
 var year = d.getFullYear();
 var month = d.getMonth();
-
+console.log(month);
 if(Card.exp_month > 12){
 	res.json({
 		message:'Not a valid month'
@@ -29,61 +29,67 @@ if(Card.exp_month > 12){
 	res.json({
 		message:'Not valid year'
 	})
+}else if( Card.exp_year == year && Card.exp_month < month + 1){
+	res.json({
+		message:'enter valid month and year'
+	})
+
 }else{        
+users.findOne({where:{access_token: Card.token}}).then(function (data) {
+	console.log(data);
+	if(data){
+		stripe.tokens.create({
+		  card: {
+		    "number": Card.number,
+		    "exp_month": Card.exp_month,
+		    "exp_year": Card.exp_year,
+		    "cvc": Card.cvv
+		  }
+		}, function(err, token) {
 
-stripe.tokens.create({
-  card: {
-    "number": Card.number,
-    "exp_month": Card.exp_month,
-    "exp_year": Card.exp_year,
-    "cvc": Card.cvv
-  }
-}, function(err, token) {
+		  console.log(token);
+		  if(err){
+		  	res.json({
+		  		message:'error in transaction'
+		  	})
+		  }
+		  stripe.charges.create({
+		  amount: Card.amount,
+		  currency: "usd",
+		  source: token.id 
+		  
+		},function(err, charge) {
+		  console.log(err);
+		  console.log(charge);
+		  if(err){
+		  	res.json({
+		  		message: 'error in transaction'
+		  	})
+		  }
+		  	else
+		  	{				
+			users.update({ points: data.dataValues.points + parseInt(Card.amount) },
+		       { where: { access_token: Card.token } }
+		            ).then(function(result) {
+		        res.json({
+		            message:'points added to the wallet'
+		        })
+		        }).catch(function(err) {
+		            res.json({
+		                message: 'error with access token'
+		            })
+		        });	
+		  	}
+		  });
 
-  console.log(token);
-  if(err){
-  	res.json({
-  		message:'error in transaction'
-  	})
-  }
-  stripe.charges.create({
-  amount: Card.amount,
-  currency: "usd",
-  source: token.id 
-  
-},function(err, charge) {
-  console.log(err);
-  console.log(charge);
-  if(err){
-  	res.json({
-  		message: 'error in transaction'
-  	})
-  }
-  	else
-  	{
-  		
 
-		
-	users.update({ points: Card.amount },
-       { where: { access_token: Card.token } }
-            ).then(function(result) {
-        res.json({
-            message:'points added to the wallet'
-        })
-        }).catch(function(err) {
-            res.json({
-                message: 'error with access token'
-            })
-        });
-				
-    	
-		
-		
-  	}
-  });
-
+		});
+	}else{
+		res.json({
+			message:'token not found'
+		})
+	}
 
 });
 }
- 
 }

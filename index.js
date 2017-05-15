@@ -2,8 +2,6 @@
 var express = require('express');
 var path = require('path');
 var bodyParser=require('body-parser');
-//var validate = require('express-validation');
-var session = require('express-session');
 var app = express();
 
 
@@ -15,7 +13,7 @@ var transfer = require('./controllers/transfer');
 
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
-//app.use(session({secret: '123456'}));
+
 
 app.post('/api/details', userDetails.storedetails);
 app.post('/api/login', loginDetails.retrivename);
